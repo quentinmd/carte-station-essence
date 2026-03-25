@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { TriangleAlert, LoaderCircle } from "lucide-react";
 import FuelMap from "./components/FuelMap";
 import BottomSheetFilters from "./components/BottomSheetFilters";
+import StationServicesPage from "./components/StationServicesPage";
 import { fetchStationsByRadius } from "./services/fuelApi";
 
 const FALLBACK_POSITION = [48.8566, 2.3522];
@@ -13,6 +14,7 @@ function App() {
   const [selectedFuel, setSelectedFuel] = useState("gazole");
   const [selectedRadius, setSelectedRadius] = useState(5);
   const [stations, setStations] = useState([]);
+  const [selectedStationServices, setSelectedStationServices] = useState(null);
   const [showCheapest, setShowCheapest] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -158,6 +160,7 @@ function App() {
           selectedFuel={selectedFuel}
           onViewportChange={handleViewportChange}
           onBoundsChange={handleBoundsChange}
+          onOpenServices={setSelectedStationServices}
         />
       ) : (
         <div className="flex h-full items-center justify-center bg-gradient-to-b from-[#d8eff4] to-[#f8fafc]">
@@ -198,6 +201,13 @@ function App() {
         stationsCount={stations.length}
         loading={loading}
       />
+
+      {selectedStationServices && (
+        <StationServicesPage
+          station={selectedStationServices}
+          onBack={() => setSelectedStationServices(null)}
+        />
+      )}
     </main>
   );
 }

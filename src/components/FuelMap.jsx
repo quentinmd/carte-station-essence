@@ -74,6 +74,7 @@ export default function FuelMap({
   selectedFuel,
   onViewportChange,
   onBoundsChange,
+  onOpenServices,
 }) {
   const markerIcons = useMemo(() => {
     const icons = new Map();
@@ -145,6 +146,13 @@ export default function FuelMap({
               >
                 Y aller
               </a>
+              <button
+                type="button"
+                onClick={() => onOpenServices(station)}
+                className="inline-flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2 font-semibold text-slate-700"
+              >
+                Services disponibles
+              </button>
             </div>
           </Popup>
         </Marker>

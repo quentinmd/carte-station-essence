@@ -52,6 +52,69 @@ const normalizeText = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
+const parseMaybeJson = (value) => {
+  if (typeof value !== "string") return value;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+};
+
+const flattenServices = (value) => {
+  if (!value) return [];
+
+  const parsed = parseMaybeJson(value);
+
+  if (Array.isArray(parsed)) {
+    return parsed.flatMap(flattenServices);
+  }
+
+  if (typeof parsed === "string") {
+    return parsed
+      .split(/;|,|\||\n/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  if (typeof parsed === "object") {
+    if (Array.isArray(parsed.service)) {
+      return parsed.service.flatMap(flattenServices);
+    }
+
+    if (parsed.service) {
+      return flattenServices(parsed.service);
+    }
+
+    return Object.values(parsed).flatMap(flattenServices);
+  }
+
+  return [];
+};
+
+const extractServices = (fields) => {
+  const rawServices = [fields.services_service, fields.services];
+  const merged = rawServices.flatMap(flattenServices);
+
+  return [...new Set(merged.map((service) => service.trim()).filter(Boolean))];
+};
+
+const extractPaymentMethods = (fields, services) => {
+  const serviceText = normalizeText(services.join(" "));
+  const automateText = normalizeText(fields.horaires_automate_24_24 || "");
+
+  const card =
+    /\bcb\b|carte|visa|mastercard|paiement/.test(serviceText) ||
+    automateText === "oui";
+  const cash = /espec|liquide/.test(serviceText) ? true : null;
+
+  return {
+    card,
+    cash,
+  };
+};
+
 const normalizeStation = (record, selectedFuel, userPosition) => {
   const fields = record ?? {};
 
@@ -91,6 +154,8 @@ const normalizeStation = (record, selectedFuel, userPosition) => {
   const zip = fields.cp || fields.code_postal || "";
   const city = fields.ville || fields.commune || "";
   const address = [fields.adresse, zip, city].filter(Boolean).join(" ");
+  const services = extractServices(fields);
+  const paymentMethods = extractPaymentMethods(fields, services);
 
   const apiName = pickValue(fields, [
     "enseigne",
@@ -123,6 +188,8 @@ const normalizeStation = (record, selectedFuel, userPosition) => {
     price,
     fuel: selectedFuel,
     updatedAt: updatedAt || null,
+    services,
+    paymentMethods,
     distanceKm: haversineDistance(userPosition, [latitude, longitude]),
   };
 };

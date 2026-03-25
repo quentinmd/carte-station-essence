@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Manrope", sans-serif;
+  color: #0b1724;
+  background: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.font-heading {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.station-icon-wrapper {
+  background: transparent;
+  border: 0;
+}
+
+.station-price-chip {
+  position: relative;
+  display: inline-flex;
+  min-width: 86px;
+  justify-content: center;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(4, 22, 38, 0.16);
+  background: #ffffff;
+  box-shadow:
+    0 8px 16px rgba(8, 25, 42, 0.2),
+    0 20px 28px rgba(8, 25, 42, 0.14);
+  color: #0a1b2b;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.station-price-chip::before {
+  content: "";
+  position: absolute;
+  inset: 8px 6px -10px;
+  border-radius: 999px;
+  background: rgba(5, 18, 31, 0.3);
+  filter: blur(12px);
+  z-index: -1;
+}
+
+.station-price-chip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 10px;
+  height: 10px;
+  transform: translateX(-50%) rotate(45deg);
+  background: inherit;
+  border-right: 1px solid rgba(4, 22, 38, 0.16);
+  border-bottom: 1px solid rgba(4, 22, 38, 0.16);
+}
+
+.station-price-chip--best {
+  border-color: rgba(19, 126, 74, 0.4);
+  background: #e6fff0;
+  color: #0d6c3f;
+  transform: scale(1.05);
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 16px;
+}
+
+.leaflet-popup-content {
+  margin: 12px;
+}

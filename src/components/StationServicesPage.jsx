@@ -11,6 +11,7 @@ import {
   Landmark,
   ShieldCheck,
   Clock3,
+  Navigation,
 } from "lucide-react";
 
 const formatPaymentState = (value) => {
@@ -44,17 +45,30 @@ const serviceIconFor = (service) => {
 export default function StationServicesPage({ station, onBack }) {
   const services = station?.services ?? [];
   const paymentMethods = station?.paymentMethods ?? { card: null, cash: null };
+  const navigationUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+    `${station?.lat},${station?.lng}`,
+  )}`;
 
   return (
     <section className="absolute inset-0 z-[1300] overflow-y-auto bg-slate-50 px-4 pb-8 pt-6">
       <div className="mx-auto max-w-2xl space-y-5">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
-        >
-          <ArrowLeft size={16} /> Retour a la carte
-        </button>
+        <div className="flex items-center justify-between gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700"
+          >
+            <ArrowLeft size={16} /> Retour a la carte
+          </button>
+          <a
+            href={navigationUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-ink px-4 py-2 text-sm font-semibold text-white"
+          >
+            <Navigation size={16} /> Y aller
+          </a>
+        </div>
 
         <div className="rounded-2xl bg-white p-4 shadow-sm">
           <p className="text-lg font-bold text-ink">{station.name}</p>

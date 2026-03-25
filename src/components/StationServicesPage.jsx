@@ -1,9 +1,44 @@
-import { ArrowLeft, CreditCard, Banknote, Fuel, Wrench } from "lucide-react";
+import {
+  ArrowLeft,
+  CreditCard,
+  Banknote,
+  Fuel,
+  Wrench,
+  Car,
+  ShoppingCart,
+  Coffee,
+  Droplets,
+  Landmark,
+  ShieldCheck,
+  Clock3,
+} from "lucide-react";
 
 const formatPaymentState = (value) => {
   if (value === true) return "Oui";
   if (value === false) return "Non";
   return "Inconnu";
+};
+
+const normalizeText = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const serviceIconFor = (service) => {
+  const normalized = normalizeText(service);
+
+  if (/lavage|portique|aspirateur/.test(normalized)) return Car;
+  if (/boutique|alimentaire|epicerie|shopping/.test(normalized)) {
+    return ShoppingCart;
+  }
+  if (/restauration|cafe|boisson/.test(normalized)) return Coffee;
+  if (/gonflage|eau/.test(normalized)) return Droplets;
+  if (/dab|distributeur|billet/.test(normalized)) return Landmark;
+  if (/additive|additive|premium/.test(normalized)) return ShieldCheck;
+  if (/24\/24|automate|cb/.test(normalized)) return Clock3;
+
+  return Wrench;
 };
 
 export default function StationServicesPage({ station, onBack }) {
@@ -59,14 +94,18 @@ export default function StationServicesPage({ station, onBack }) {
           </p>
           {services.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {services.map((service) => (
-                <span
-                  key={service}
-                  className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"
-                >
-                  <Wrench size={12} /> {service}
-                </span>
-              ))}
+              {services.map((service) => {
+                const ServiceIcon = serviceIconFor(service);
+
+                return (
+                  <span
+                    key={service}
+                    className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"
+                  >
+                    <ServiceIcon size={12} /> {service}
+                  </span>
+                );
+              })}
             </div>
           ) : (
             <p className="text-sm text-slate-500">

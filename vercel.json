@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/prix-carburants/:path*",
+      "destination": "https://data.economie.gouv.fr/:path*"
+    }
+  ]
+}

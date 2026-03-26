@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://essence.quentvisuals.dev/sitemap.xml

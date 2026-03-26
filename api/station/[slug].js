@@ -1,50 +1,55 @@
-import { extractStationSummary, findStationBySlug, SITE_URL } from '../_lib/stations.js'
+import {
+  extractStationSummary,
+  findStationBySlug,
+  SITE_URL,
+} from "../_lib/stations.js";
 
 const escapeHtml = (value) =>
-  String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
+  String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 
-const formatPrice = (value) => (typeof value === 'number' ? `${value.toFixed(3)} EUR / L` : 'Non renseigne')
+const formatPrice = (value) =>
+  typeof value === "number" ? `${value.toFixed(3)} EUR / L` : "Non renseigne";
 
 export default async function handler(req, res) {
-  const slug = req.query.slug
+  const slug = req.query.slug;
 
   if (!slug || Array.isArray(slug)) {
-    res.status(400).send('Invalid station slug')
-    return
+    res.status(400).send("Invalid station slug");
+    return;
   }
 
-  const record = await findStationBySlug(slug)
+  const record = await findStationBySlug(slug);
 
   if (!record) {
-    res.status(404).send('Station not found')
-    return
+    res.status(404).send("Station not found");
+    return;
   }
 
-  const station = extractStationSummary(record)
-  const title = `${station.name} - prix carburants a ${station.city}`
-  const description = `Consultez les prix carburants de ${station.name} (${station.address}) : Gazole ${formatPrice(station.gazole)}, E10 ${formatPrice(station.e10)}, SP98 ${formatPrice(station.sp98)}.`
-  const canonical = `${SITE_URL}/station/${station.slug}`
+  const station = extractStationSummary(record);
+  const title = `${station.name} - prix carburants a ${station.city}`;
+  const description = `Consultez les prix carburants de ${station.name} (${station.address}) : Gazole ${formatPrice(station.gazole)}, E10 ${formatPrice(station.e10)}, SP98 ${formatPrice(station.sp98)}.`;
+  const canonical = `${SITE_URL}/station/${station.slug}`;
 
   const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'GasStation',
+    "@context": "https://schema.org",
+    "@type": "GasStation",
     name: station.name,
     address: station.address,
     url: canonical,
     geo:
       Number.isFinite(station.lat) && Number.isFinite(station.lng)
         ? {
-            '@type': 'GeoCoordinates',
+            "@type": "GeoCoordinates",
             latitude: station.lat,
             longitude: station.lng,
           }
         : undefined,
-  }
+  };
 
   const html = `<!doctype html>
 <html lang="fr">
@@ -75,7 +80,7 @@ export default async function handler(req, res) {
       <article class="card">
         <h1>${escapeHtml(station.name)}</h1>
         <p>${escapeHtml(station.address)}</p>
-        <p>Derniere mise a jour: ${escapeHtml(station.updatedAt || 'Non renseignee')}</p>
+        <p>Derniere mise a jour: ${escapeHtml(station.updatedAt || "Non renseignee")}</p>
         <h2>Prix disponibles</h2>
         <ul>
           <li>Gazole: ${escapeHtml(formatPrice(station.gazole))}</li>
@@ -89,9 +94,9 @@ export default async function handler(req, res) {
       </article>
     </main>
   </body>
-</html>`
+</html>`;
 
-  res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 's-maxage=1800, stale-while-revalidate=86400')
-  res.status(200).send(html)
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.setHeader("Cache-Control", "s-maxage=1800, stale-while-revalidate=86400");
+  res.status(200).send(html);
 }

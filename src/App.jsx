@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { TriangleAlert, LoaderCircle } from "lucide-react";
+import { TriangleAlert, LoaderCircle, ChartNoAxesColumn } from "lucide-react";
 import FuelMap from "./components/FuelMap";
 import BottomSheetFilters from "./components/BottomSheetFilters";
 import StationServicesPage from "./components/StationServicesPage";
+import PriceVariationsPage from "./components/PriceVariationsPage";
 import { fetchStationsByRadius } from "./services/fuelApi";
+import { recordStationsPriceSnapshot } from "./utils/priceHistory";
 
 const FALLBACK_POSITION = [48.8566, 2.3522];
 
@@ -15,6 +17,7 @@ function App() {
   const [selectedRadius, setSelectedRadius] = useState(5);
   const [stations, setStations] = useState([]);
   const [selectedStationServices, setSelectedStationServices] = useState(null);
+  const [showVariationsPage, setShowVariationsPage] = useState(false);
   const [showCheapest, setShowCheapest] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -63,6 +66,10 @@ function App() {
 
         if (!cancelled) {
           setStations(data);
+          recordStationsPriceSnapshot({
+            stations: data,
+            fuel: selectedFuel,
+          });
           setErrorMessage((prev) =>
             prev.includes("Position refusee") ? prev : "",
           );
@@ -176,11 +183,21 @@ function App() {
             </p>
             <p className="text-sm text-white/80">Prix en direct - France</p>
           </div>
-          {loading && (
-            <div className="rounded-full bg-white/20 p-2">
-              <LoaderCircle className="h-4 w-4 animate-spin" />
-            </div>
-          )}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowVariationsPage(true)}
+              className="pointer-events-auto inline-flex min-h-10 items-center gap-2 rounded-full border border-white/35 bg-white/15 px-3 py-2 text-xs font-semibold text-white backdrop-blur transition hover:bg-white/25"
+            >
+              <ChartNoAxesColumn size={14} /> Variations
+            </button>
+
+            {loading && (
+              <div className="rounded-full bg-white/20 p-2">
+                <LoaderCircle className="h-4 w-4 animate-spin" />
+              </div>
+            )}
+          </div>
         </div>
 
         {errorMessage && (
@@ -206,6 +223,15 @@ function App() {
         <StationServicesPage
           station={selectedStationServices}
           onBack={() => setSelectedStationServices(null)}
+        />
+      )}
+
+      {showVariationsPage && (
+        <PriceVariationsPage
+          stations={stations}
+          selectedFuel={selectedFuel}
+          selectedRadius={selectedRadius}
+          onBack={() => setShowVariationsPage(false)}
         />
       )}
     </main>

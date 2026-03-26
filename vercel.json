@@ -1,6 +1,14 @@
 {
   "rewrites": [
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap.xml"
+    },
+    {
+      "source": "/station/:slug",
+      "destination": "/api/station/:slug"
+    },
+    {
       "source": "/api/prix-carburants/:path*",
       "destination": "https://data.economie.gouv.fr/:path*"
     }

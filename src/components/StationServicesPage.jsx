@@ -76,6 +76,14 @@ export default function StationServicesPage({ station, onBack }) {
           <p className="mt-2 inline-flex items-center gap-2 text-sm font-semibold text-slate-800">
             <Fuel size={16} /> {station.price.toFixed(3)} EUR / L
           </p>
+          {station.seoUrl && (
+            <a
+              href={station.seoUrl}
+              className="mt-3 inline-flex items-center rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700"
+            >
+              Voir la fiche station SEO
+            </a>
+          )}
         </div>
 
         <div className="rounded-2xl bg-white p-4 shadow-sm">

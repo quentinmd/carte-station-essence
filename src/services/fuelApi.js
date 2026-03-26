@@ -52,6 +52,11 @@ const normalizeText = (value) =>
     .replace(/[\u0300-\u036f]/g, "")
     .trim();
 
+const slugify = (value) =>
+  normalizeText(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
 const parseMaybeJson = (value) => {
   if (typeof value !== "string") return value;
 
@@ -178,10 +183,15 @@ const normalizeStation = (record, selectedFuel, userPosition) => {
     apiName && !isDuplicateAddressName
       ? String(apiName)
       : fallbackName || "Station inconnue";
+  const seoSlug = `${slugify(displayName)}-${slugify(city || zip || "france")}-${String(
+    record.recordid || fields.id || `${latitude}-${longitude}`,
+  )}`;
 
   return {
     id: record.recordid || fields.id || `${latitude}-${longitude}`,
     name: displayName,
+    seoSlug,
+    seoUrl: `/station/${seoSlug}`,
     address,
     lat: latitude,
     lng: longitude,
